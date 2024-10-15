@@ -48,9 +48,8 @@ class Node:
 
 
 class Tree:
-    nodes: dict[str, Node] = {}
-
     def __init__(self, nodes: dict[str, float]):
+        self.nodes: dict[str, Node] = {}
         for id, value in nodes.items():
             node = Node(id, value)
             self.nodes[id] = node
