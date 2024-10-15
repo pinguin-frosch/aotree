@@ -1,3 +1,7 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
+
 class Node:
     def __init__(self, id: str, value: float):
         self.id = id
@@ -102,6 +106,37 @@ class Tree:
 
         str_children = node.str_children()
         print("{}: {} >>> {}".format(node.id, str_children, updates))
+
+    def show_shortest_path(self):
+        graph = nx.DiGraph()
+
+        for id, node in self.nodes.items():
+            if node.and_nodes:
+                for child_id in node.and_nodes.keys():
+                    graph.add_edge(id, child_id, label="AND", color="green")
+            if node.or_nodes:
+                for child_id in node.or_nodes.keys():
+                    graph.add_edge(id, child_id, label="OR", color="blue")
+
+        pos = nx.spring_layout(graph)
+        labels = nx.get_edge_attributes(graph, "label")
+        colors = [graph[u][v]["color"] for u, v in graph.edges]
+
+        plt.figure(figsize=(8, 6))
+        nx.draw(
+            graph,
+            pos,
+            with_labels=True,
+            node_color="lightblue",
+            node_size=2000,
+            font_size=10,
+            font_weight="bold",
+            edge_color=colors,
+            arrows=True,
+        )
+        nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels, font_color="red")
+        plt.title("AND-OR Tree")
+        plt.show()
 
     def print(self):
         for _, node in self.nodes.items():

@@ -24,6 +24,7 @@ def main():
     tree.add_or_connection("D", "J")
 
     tree.update_cost("A")
+    tree.show_shortest_path()
 
 
 if __name__ == "__main__":
