@@ -108,7 +108,7 @@ class Tree:
         str_children = node.str_children()
         print("{}: {} >>> {}".format(node.id, str_children, updates))
 
-    def show_shortest_path(self):
+    def show_shortest_path(self, start):
         graph = nx.DiGraph()
 
         node_labels = {}
@@ -131,12 +131,18 @@ class Tree:
                 for child_id in node.or_nodes.keys():
                     graph.add_edge(or_node, child_id)
 
+        for u, v in graph.edges:
+            nx.set_edge_attributes(graph, {(u, v): {"color": "black"}})
+        self.highlight_edges(graph, start, "red")
+
         try:
             pos = graphviz_layout(graph, prog="dot")
         except:
             pos = nx.spring_layout(graph)
             print("Please install GraphViz to use the dot visualization")
             print("Defaulting to the spring layout view")
+
+        edge_colors = [graph[u][v]["color"] for u, v in graph.edges]
 
         plt.figure(figsize=(8, 6))
         nx.draw(
@@ -146,6 +152,7 @@ class Tree:
             node_color="skyblue",
             with_labels=True,
             node_size=2000,
+            edge_color=edge_colors,
             font_weight="bold",
             font_size=10,
             arrows=True,
@@ -159,3 +166,42 @@ class Tree:
     def print(self):
         for _, node in self.nodes.items():
             print(node)
+
+    def highlight_edges(self, graph: nx.DiGraph, node_id: str, color: str = "blue"):
+        node = self.nodes[node_id]
+        if not node.and_nodes and not node.or_nodes:
+            return
+
+        if node.and_nodes and node.or_nodes:
+            if node.and_value < node.or_value:
+                self.highlight_and_edges(graph, node, color)
+                for id in node.and_nodes:
+                    self.highlight_edges(graph, id, color)
+            else:
+                self.highlight_or_edges(graph, node, color)
+                for id in node.or_nodes:
+                    self.highlight_edges(graph, id, color)
+        elif node.and_nodes and not node.or_nodes:
+            self.highlight_and_edges(graph, node, color)
+            for id in node.and_nodes:
+                self.highlight_edges(graph, id, color)
+        else:
+            self.highlight_or_edges(graph, node, color)
+            for id in node.or_nodes:
+                self.highlight_edges(graph, id, color)
+
+    def highlight_and_edges(self, graph: nx.DiGraph, node: Node, color: str = "blue"):
+        and_node = "{} {}".format(node.id, "AND")
+        node_and_edge = (node.id, and_node)
+        nx.set_edge_attributes(graph, {node_and_edge: {"color": color}})
+        for id in node.and_nodes:
+            and_child_edge = (and_node, id)
+            nx.set_edge_attributes(graph, {and_child_edge: {"color": color}})
+
+    def highlight_or_edges(self, graph: nx.DiGraph, node: Node, color: str = "blue"):
+        or_node = "{} {}".format(node.id, "OR")
+        node_or_edge = (node.id, or_node)
+        nx.set_edge_attributes(graph, {node_or_edge: {"color": color}})
+        for id in node.or_nodes:
+            or_child_edge = (or_node, id)
+            nx.set_edge_attributes(graph, {or_child_edge: {"color": color}})
