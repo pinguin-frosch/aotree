@@ -110,31 +110,43 @@ class Tree:
     def show_shortest_path(self):
         graph = nx.DiGraph()
 
+        node_labels = {}
+        for id in self.nodes:
+            node_labels[id] = id
+
         for id, node in self.nodes.items():
             if node.and_nodes:
+                and_node = "{} {}".format(id, "AND")
+                graph.add_node(and_node)
+                graph.add_edge(id, and_node)
+                node_labels[and_node] = "AND"
                 for child_id in node.and_nodes.keys():
-                    graph.add_edge(id, child_id, label="AND", color="green")
+                    graph.add_edge(and_node, child_id)
             if node.or_nodes:
+                or_node = "{} {}".format(id, "OR")
+                graph.add_node(or_node)
+                graph.add_edge(id, or_node)
+                node_labels[or_node] = "OR"
                 for child_id in node.or_nodes.keys():
-                    graph.add_edge(id, child_id, label="OR", color="blue")
+                    graph.add_edge(or_node, child_id)
 
         pos = nx.spring_layout(graph)
-        labels = nx.get_edge_attributes(graph, "label")
-        colors = [graph[u][v]["color"] for u, v in graph.edges]
 
         plt.figure(figsize=(8, 6))
         nx.draw(
             graph,
             pos,
+            labels=node_labels,
+            node_color="skyblue",
             with_labels=True,
-            node_color="lightblue",
             node_size=2000,
-            font_size=10,
             font_weight="bold",
-            edge_color=colors,
+            font_size=10,
             arrows=True,
         )
-        nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels, font_color="red")
+
+        edge_labels = nx.get_edge_attributes(graph, "label")
+        nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels)
         plt.title("AND-OR Tree")
         plt.show()
 
