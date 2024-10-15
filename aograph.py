@@ -47,6 +47,32 @@ class Tree:
             child = self.nodes[child_id]
             parent.and_nodes[child_id] = child
 
+    def update_cost(self, node_id: str):
+        node = self.nodes[node_id]
+        if not node.and_nodes and not node.or_nodes:
+            return
+
+        for id in node.or_nodes:
+            self.update_cost(id)
+        for id in node.and_nodes:
+            self.update_cost(id)
+
+        costs = []
+        if node.and_nodes:
+            and_sum = 0
+            for _, child in node.and_nodes.items():
+                and_sum += child.value + 1
+            node.and_value = and_sum
+            costs.append(and_sum)
+        if node.or_nodes:
+            or_sums = []
+            for _, child in node.or_nodes.items():
+                or_sums.append(child.value + 1)
+            node.or_value = min(or_sums)
+            costs.append(min(or_sums))
+
+        node.value = min(costs)
+
     def print(self):
         for _, node in self.nodes.items():
             print(node)

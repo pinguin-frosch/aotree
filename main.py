@@ -23,6 +23,7 @@ def main():
     tree.add_and_connection("C", "H", "I")
     tree.add_or_connection("D", "J")
 
+    tree.update_cost("A")
     tree.print()
 
 
