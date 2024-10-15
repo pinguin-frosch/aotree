@@ -1,5 +1,6 @@
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
+from networkx.drawing.nx_pydot import graphviz_layout
 
 
 class Node:
@@ -130,7 +131,12 @@ class Tree:
                 for child_id in node.or_nodes.keys():
                     graph.add_edge(or_node, child_id)
 
-        pos = nx.spring_layout(graph)
+        try:
+            pos = graphviz_layout(graph, prog="dot")
+        except:
+            pos = nx.spring_layout(graph)
+            print("Please install GraphViz to use the dot visualization")
+            print("Defaulting to the spring layout view")
 
         plt.figure(figsize=(8, 6))
         nx.draw(
