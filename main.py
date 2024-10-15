@@ -1,4 +1,4 @@
-from aograph import Tree
+from aotree import Tree
 
 
 def main():
