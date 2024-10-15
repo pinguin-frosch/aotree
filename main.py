@@ -16,6 +16,13 @@ def main():
     }
     tree = Tree(nodes)
 
+    tree.add_or_connection("A", "B")
+    tree.add_and_connection("A", "C", "D")
+    tree.add_or_connection("B", "E", "F")
+    tree.add_or_connection("C", "G")
+    tree.add_and_connection("C", "H", "I")
+    tree.add_or_connection("D", "J")
+
     tree.print()
 
 
