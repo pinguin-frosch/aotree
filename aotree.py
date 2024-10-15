@@ -202,6 +202,9 @@ class Tree:
         or_node = "{} {}".format(node.id, "OR")
         node_or_edge = (node.id, or_node)
         nx.set_edge_attributes(graph, {node_or_edge: {"color": color}})
-        for id in node.or_nodes:
+        for id, child in node.or_nodes.items():
+            if child.value + 1 > node.value:
+                continue
             or_child_edge = (or_node, id)
             nx.set_edge_attributes(graph, {or_child_edge: {"color": color}})
+            return  # Only use the first one
