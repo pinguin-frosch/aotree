@@ -24,7 +24,6 @@ def main():
     tree.add_or_connection("D", "J")
 
     tree.update_cost("A")
-    tree.print()
 
 
 if __name__ == "__main__":

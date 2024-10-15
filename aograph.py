@@ -23,6 +23,29 @@ class Node:
         repr += "]}"
         return repr
 
+    def str_children(self) -> str:
+        repr = "{"
+        and_added = False
+        if self.and_nodes:
+            and_added = True
+            repr += "'AND': ["
+            for i, id in enumerate(self.and_nodes):
+                repr += "{}".format(id)
+                if i != len(self.and_nodes) - 1:
+                    repr += ", "
+            repr += "]"
+        if self.or_nodes:
+            if and_added:
+                repr += ", "
+            repr += "'OR': ["
+            for i, id in enumerate(self.or_nodes):
+                repr += "{}".format(id)
+                if i != len(self.or_nodes) - 1:
+                    repr += ", "
+            repr += "]"
+        repr += "}"
+        return repr
+
 
 class Tree:
     nodes: dict[str, Node] = {}
@@ -57,6 +80,7 @@ class Tree:
         for id in node.and_nodes:
             self.update_cost(id)
 
+        updates = {}
         costs = []
         if node.and_nodes:
             and_sum = 0
@@ -64,14 +88,21 @@ class Tree:
                 and_sum += child.value + 1
             node.and_value = and_sum
             costs.append(and_sum)
+            key = " AND ".join(node.and_nodes.keys())
+            updates[key] = node.and_value
         if node.or_nodes:
             or_sums = []
             for _, child in node.or_nodes.items():
                 or_sums.append(child.value + 1)
             node.or_value = min(or_sums)
             costs.append(min(or_sums))
+            key = " OR ".join(node.or_nodes.keys())
+            updates[key] = node.or_value
 
         node.value = min(costs)
+
+        str_children = node.str_children()
+        print("{}: {} >>> {}".format(node.id, str_children, updates))
 
     def print(self):
         for _, node in self.nodes.items():
