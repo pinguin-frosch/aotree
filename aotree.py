@@ -112,24 +112,24 @@ class Tree:
         graph = nx.DiGraph()
 
         node_labels = {}
-        for id in self.nodes:
-            node_labels[id] = id
+        for id, node in self.nodes.items():
+            node_labels[id] = "{}: {}".format(id, node.value)
 
         for id, node in self.nodes.items():
             if node.and_nodes:
                 and_node = "{} {}".format(id, "AND")
                 graph.add_node(and_node)
-                graph.add_edge(id, and_node)
-                node_labels[and_node] = "AND"
+                graph.add_edge(id, and_node, label="{}".format(0.0))
+                node_labels[and_node] = "AND: {}".format(node.and_value)
                 for child_id in node.and_nodes.keys():
-                    graph.add_edge(and_node, child_id)
+                    graph.add_edge(and_node, child_id, label="{}".format(1.0))
             if node.or_nodes:
                 or_node = "{} {}".format(id, "OR")
                 graph.add_node(or_node)
-                graph.add_edge(id, or_node)
-                node_labels[or_node] = "OR"
+                graph.add_edge(id, or_node, label="{}".format(0.0))
+                node_labels[or_node] = "OR: {}".format(node.or_value)
                 for child_id in node.or_nodes.keys():
-                    graph.add_edge(or_node, child_id)
+                    graph.add_edge(or_node, child_id, label="{}".format(1.0))
 
         for u, v in graph.edges:
             nx.set_edge_attributes(graph, {(u, v): {"color": "black"}})
